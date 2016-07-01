@@ -1,8 +1,8 @@
-add_library(qrcode_detection qrcode_detection.cpp)
+rosbuild_add_library(qrcode_detection qrcode_detection.cpp)
 target_link_libraries(qrcode_detection zbar)
 
-add_library(qrcode_detection_nodelet nodelet.cpp)
+rosbuild_add_library(qrcode_detection_nodelet nodelet.cpp)
 target_link_libraries(qrcode_detection_nodelet qrcode_detection)
 
-add_executable(qrcode_detection_node node.cpp)
+rosbuild_add_executable(qrcode_detection_node node.cpp)
 target_link_libraries(qrcode_detection_node qrcode_detection)

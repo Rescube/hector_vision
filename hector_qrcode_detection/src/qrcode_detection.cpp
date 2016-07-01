@@ -29,7 +29,7 @@
 #include <hector_qrcode_detection/qrcode_detection.h>
 #include <hector_worldmodel_msgs/ImagePercept.h>
 
-#include <cv.h>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <zbar.h>
 
