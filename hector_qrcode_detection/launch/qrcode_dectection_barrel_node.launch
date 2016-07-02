@@ -8,12 +8,20 @@
     <remap from="openni/image/camera_info" to="image/camera_info" />
   </node>
  -->
-  <node name="qrcode_detection_pseye_front" pkg="hector_qrcode_detection" type="qrcode_detection_node" output="screen" respawn="true">
+  <node name="qrcode_detection_pseye_head_front" pkg="hector_qrcode_detection" type="qrcode_detection_node" output="screen" respawn="true">
     <remap from="image_percept" to="worldmodel/image_percept" />
     <remap from="image" to="/head_front_camera/image_raw" />
-    <remap from="image/qrcode" to="image/qrcode_pseye_front" />
+    <remap from="image/qrcode" to="image/qrcode_pseye_head_front" />
   </node>
 
+  <node name="qrcode_detection_pseye_head_back" pkg="hector_qrcode_detection" type="qrcode_detection_node" output="screen" respawn="true">
+    <remap from="image_percept" to="worldmodel/image_percept" />
+    <remap from="image" to="/head_back_camera/image_raw" />
+    <remap from="image/qrcode" to="image/qrcode_pseye_head_back" />
+  </node>
+
+
   <node name="qr_code_csv_and_markers" pkg="hector_qrcode_detection" type="qrcode_to_csv.py" output="screen" />
+
 
 </launch>
