@@ -1,5 +1,6 @@
 #include "heat_detection.h"
 
+using namespace cv;
 
 HeatDetection::HeatDetection(){
     image_count_ = 0;
@@ -75,11 +76,20 @@ void HeatDetection::imageCallback(const sensor_msgs::ImageConstPtr& img, const s
    params.filterByConvexity = false;
    params.filterByInertia = false;
 
+#if CV_VERSION_MAJOR>2
+   Ptr<SimpleBlobDetector> blob_detector = SimpleBlobDetector::create(params);
+#else
    cv::SimpleBlobDetector blob_detector(params);
+#endif
+
    std::vector<cv::KeyPoint> keypoints;
    keypoints.clear();
 
+#if CV_VERSION_MAJOR>2
+   blob_detector->detect(img_thres_,keypoints);
+#else
    blob_detector.detect(img_thres_,keypoints);
+#endif
 
    //Publish results
    hector_worldmodel_msgs::ImagePercept ip;

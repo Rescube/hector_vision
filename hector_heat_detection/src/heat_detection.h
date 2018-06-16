@@ -7,6 +7,10 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/features2d/features2d.hpp>
+// cv3 
+#include <opencv2/features2d.hpp>
+// cv3 
+#include <opencv2/xfeatures2d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <sensor_msgs/image_encodings.h>
 //#include <thermaleye_msgs/Mapping.h>

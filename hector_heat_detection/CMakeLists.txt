@@ -1,10 +1,16 @@
 # Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
 # Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
+# https://github.com/tdenewiler/foscam_8918_driver/commit/c49b9a0c87645977cee1b6f6c4a03324f0df3df8
+# https://github.com/ros-perception/vision_opencv/issues/193
+
 cmake_minimum_required(VERSION 2.8.3)
 project(hector_heat_detection)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
 find_package(catkin REQUIRED COMPONENTS roscpp rospy image_transport camera_info_manager hector_worldmodel_msgs sensor_msgs cv_bridge std_msgs image_transport dynamic_reconfigure)
+find_package(OpenCV REQUIRED COMPONENTS core highgui videoio imgproc imgcodecs)
+
+include_directories(include ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 #find_package(OpenCV REQUIRED)
 # include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
@@ -62,12 +68,32 @@ find_package(catkin REQUIRED COMPONENTS roscpp rospy image_transport camera_info
 
 generate_dynamic_reconfigure_options(cfg/HeatDetection.cfg)
 
+if (${OpenCV_VERSION} MATCHES "3.3.1")
+  foreach(__cvcomponent ${OpenCV_LIB_COMPONENTS})
+    set (__original_cvcomponent ${__cvcomponent})
+    if(NOT __cvcomponent MATCHES "^opencv_")
+      set(__cvcomponent opencv_${__cvcomponent})
+    endif()
+    if (TARGET ${__cvcomponent})
+      set_target_properties(${__cvcomponent} PROPERTIES
+          MAP_IMPORTED_CONFIG_DEBUG ""
+          MAP_IMPORTED_CONFIG_RELEASE ""
+          MAP_IMPORTED_CONFIG_RELWITHDEBINFO ""
+          MAP_IMPORTED_CONFIG_MINSIZEREL ""
+      )
+    endif()
+  endforeach(__cvcomponent)
+endif()
+
+
 add_executable(heat_detection src/heat_detection.cpp)
 add_dependencies(heat_detection ${${PROJECT_NAME}_EXPORTED_TARGETS})
 #add_executable(heat_detection src/heat_detection.h)
 #add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
-target_link_libraries(heat_detection ${catkin_LIBRARIES})
+target_link_libraries(heat_detection ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs opencv_features2d)
+#target_link_libraries(heat_detection ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} /opt/ros/kinetic/lib/x86_64-linux-gnu/libopencv_features2d3.so.3.3.1 )
+#THIS MIGHT WORK target_link_libraries(heat_detection ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} /opt/ros/kinetic/lib/x86_64-linux-gnu/libopencv_features2d3.so.3.3.1 )
 
 #TODO: Define non-absolute include path
 #Teporary includes of opencv with sse3 disabled
@@ -84,6 +110,10 @@ target_link_libraries(heat_detection ${catkin_LIBRARIES})
 catkin_package(
     DEPENDS roscpp rospy image_transport camera_info_manager hector_worldmodel_msgs sensor_msgs cv_bridge std_msgs image_transport dynamic_reconfigure
     CATKIN_DEPENDS # TODO
+	cv_bridge
+	roscpp
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
+
 )
+
